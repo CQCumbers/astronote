@@ -1,0 +1,16 @@
+.m-node.placeholder {
+  border: 1px dashed #1385e5;
+}
+.m-node .inner {
+  font-size: 12px;
+  font-family: Input;
+}
+.m-node .node {
+  display: inline-block;
+  width: 100%;
+  padding: 4px 5px;
+}
+.m-node .node.is-active {
+  background-color: #D1D6DF;
+}
+

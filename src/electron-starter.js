@@ -13,7 +13,7 @@ let mainWindow;
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow = new BrowserWindow({width: 1281, height: 800, show: false});
 
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
@@ -24,6 +24,20 @@ function createWindow() {
     mainWindow.loadURL(startUrl);
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
+
+	// Show when loaded
+	mainWindow.once('ready-to-show', () => {
+		 mainWindow.show()
+	})
+
+	let wc = mainWindow.webContents
+	wc.on('will-navigate', function (e, url) {
+	  if (url != wc.getURL()) {
+		e.preventDefault()
+        popup = new BrowserWindow({width: 600, height: 400});
+        popup.loadURL(url);
+	  }
+	})
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
