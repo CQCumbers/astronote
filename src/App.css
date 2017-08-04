@@ -28,7 +28,7 @@
 
 .treepane {
     position: absolute;
-    left: 25px;
+    left: 12px;
     right: 15px;
     top: 80px;
     bottom: 0px;
@@ -38,7 +38,7 @@
 .branding {
     position: absolute;
     text-align: center;
-    left: 5px;
+    left: 0px;
     right: 5px;
     top: 5px;
     font-family: Input;

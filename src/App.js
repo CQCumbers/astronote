@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import EditPane from './EditPane.js';
 import TreePane from './TreePane.js';
 import './App.css';
-const testfile = '/Users/alexanderzhang/Documents/electron-test.txt';
-const testdir = '/Users/alexanderzhang/Documents/js/learnyounode';
 const dialog = window.require('electron').remote.dialog;
 
 class App extends Component {
   constructor() {
       super();
       this.state = {
-          file: testfile,
-		  dir: testdir
+          file: '/Users/alexanderzhang/Documents/astronote/src/help.txt',
+		  //dir: dialog.showOpenDialog({
+          //    properties: ['openDirectory']
+          //})[0]
+          dir: '/Users/alexanderzhang/Documents/js/javascripting'
       };
   }
 
@@ -41,7 +42,7 @@ class App extends Component {
           </div>
         </div>
         <div className="col-right">
-          <EditPane filepath={ this.state.file }/>
+          <EditPane filepath={ this.state.file } cacheDir={ '/Users/alexanderzhang/Documents/testcache' }/>
         </div>
       </div>
     );

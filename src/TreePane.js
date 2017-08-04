@@ -74,7 +74,7 @@ class TreePane extends Component {
     render() {
       return (
 		<Tree
-            paddingLeft={20}
+            paddingLeft={15}
             tree={this.state.tree}
             onChange={this.handleChange}
             renderNode={this.renderNode}

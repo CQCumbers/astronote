@@ -13,7 +13,7 @@ let mainWindow;
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 1281, height: 800, show: false});
+    mainWindow = new BrowserWindow({width: 1281, height: 800, show: false, webPreferences: {webSecurity: false}});
 
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
@@ -31,11 +31,11 @@ function createWindow() {
 	})
 
 	let wc = mainWindow.webContents
-	wc.on('will-navigate', function (e, url) {
-	  if (url != wc.getURL()) {
+	wc.on('will-navigate', function (e, link_url) {
+	  if (link_url != wc.getURL()) {
 		e.preventDefault()
         popup = new BrowserWindow({width: 600, height: 400});
-        popup.loadURL(url);
+        popup.loadURL(link_url);
 	  }
 	})
 
