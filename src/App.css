@@ -13,7 +13,6 @@
     left: 0px;
     top: 0px;
     bottom: 0px;
-
 }
 
 .col-right {
@@ -28,7 +27,7 @@
 
 .treepane {
     position: absolute;
-    left: 12px;
+    left: -8px;
     right: 15px;
     top: 80px;
     bottom: 0px;

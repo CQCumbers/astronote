@@ -1,13 +1,15 @@
 ### Wow this is interesting....
-[reddit](http://reddit.com/r/mechanicalkeyboards)
+[reddit](https://en.wikipedia.org/wiki/Reddit)
+
+$\sqrt{3x-1}+(1+x)^2$
 
 * Add Menubar functionality for opening directories
 *  Customize app icon
 * Customize markdown-it to
-	* download external links to .astro directory
+	* download external links to something.astro/.cache directory
+	* Cache rebuild button to remove unnecessary downloads
 * Figure out how to bundle fonts
-
-<span>THIS IS A SPAN</span>
+* Allow directory tree editing in app
 
 * Evernote with auto archiving features, file-system based data format
 * In UI:

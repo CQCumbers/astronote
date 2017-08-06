@@ -29,6 +29,9 @@ function createWindow() {
 	mainWindow.once('ready-to-show', () => {
 		 mainWindow.show()
 	})
+    
+    module.exports = mainWindow;
+    require('./menu.js');
 
 	let wc = mainWindow.webContents
 	wc.on('will-navigate', function (e, link_url) {

@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import SimpleMDE from 'react-simplemde-editor';
 import 'react-simplemde-editor/dist/simplemde.min.css';
 import './EditPane.css';
+import './katex/katex.min.css';
 
 const fs = window.require('fs');
 const scrape = window.require('website-scraper');
-const http = window.require('http');
+const request = window.require('request');
 const rimraf = window.require('rimraf');
 const debounce = window.require('lodash.debounce');
 const imageExts = ['.jpg', '.png', '.svg', '.jpeg'];
@@ -34,7 +35,6 @@ class EditPane extends Component {
             let scrapeOptions = {
                 urls: [link],
                 directory: this.props.cacheDir+'/'+link.replace(/[^a-z0-9]/gi, '').toLowerCase(),
-                recursive: false,
                 subdirectories: [
                     {directory: 'img', extensions: imageExts},
                     {directory: 'js', extensions: ['.js']},
@@ -42,19 +42,19 @@ class EditPane extends Component {
                 ],
                 defaultFilename: 'index.'+ (imageExts.some((ext) => link.endsWith(ext)) ? link.split('.').pop() : 'html')
             };
-            http.get(link, (res) => {
+            request.get(link, (err, res, body) => {
                 const { statusCode } = res;
-                if (statusCode < 200 || statusCode >= 400) return console.log('Status Code: '+statusCode);
+                if (err || statusCode < 200 || statusCode >= 400) return console.log('Status Code: '+statusCode);
                 if (fs.existsSync(scrapeOptions.directory)) {
-                     console.log(scrapeOptions.directory);
                      rimraf.sync(scrapeOptions.directory);
                 }
-                scrape(scrapeOptions).then(console.log).catch(console.log);
+                scrape(scrapeOptions).catch(console.log);
+                console.log('cached '+link);
             });
           }
       }).use(require('markdown-it-replace-link'));
       parser.render(this.state.text);
-  },900000,{leading:true})
+  },10000,{leading:true})
 
   renderMD = (markdown) => {
       const md = require('markdown-it')({
@@ -64,7 +64,7 @@ class EditPane extends Component {
           replaceLink: (link, env) => 'file://'+this.props.cacheDir+'/'
               +link.replace(/[^a-z0-9]/gi, '').toLowerCase()+'/'
               +(imageExts.some((ext) => link.endsWith(ext)) ? 'img/index.'+link.split('.').pop() : 'index.html')
-      }).use(require('markdown-it-replace-link'));
+      }).use(require('markdown-it-katex')).use(require('markdown-it-replace-link'));
       return md.render(markdown);
   }
     
@@ -84,6 +84,7 @@ class EditPane extends Component {
       this.setState({
           test: value 
       });   
+      this.saveLinks();
   },2000,{trailing:true})
 
   render() {
@@ -95,6 +96,7 @@ class EditPane extends Component {
             value={ this.state.text }
             options={{
                 autofocus: true,
+				spellChecker: false,
                 previewRender: this.renderMD
             }}
         />

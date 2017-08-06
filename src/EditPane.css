@@ -11,6 +11,12 @@
     font-family: Mercury;
 }
 
+.CodeMirror-fullscreen {
+    top: 50px;
+    height: auto;
+    z-index: 9;
+}
+
 .editor-toolbar {
     position: absolute;
     border-radius: 0px;

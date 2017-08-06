@@ -1,5 +1,5 @@
 {
-  "name": "electron-with-create-react-app",
+  "name": "Astronote",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
@@ -12,8 +12,10 @@
   "dependencies": {
     "directory-tree": "^2.0.0",
     "directory-tree-promise": "^1.0.6",
+    "electron-settings": "^3.1.1",
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^8.3.2",
+    "markdown-it-katex": "^2.0.3",
     "markdown-it-replace-link": "^1.0.1",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.6.0",

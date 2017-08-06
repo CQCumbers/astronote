@@ -1,3 +1,6 @@
+.m-tree > .m-node > .inner {
+  display: none;
+}
 .m-node.placeholder {
   border: 1px dashed #1385e5;
 }

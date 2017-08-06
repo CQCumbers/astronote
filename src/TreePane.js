@@ -3,14 +3,12 @@ import Tree from 'react-ui-tree';
 import 'react-ui-tree/dist/react-ui-tree.css';
 import cx from 'classnames';
 import './TreePane.css';
-
-// const remote = window.require('electron').remote;
 const dirTree = window.require('directory-tree');
 
 class TreePane extends Component {
     constructor(props) {
         super(props);
-        let filetree = dirTree(this.props.dir);
+        let filetree = dirTree(this.props.dir,{exclude:/(\/\.)|(\/_cache)/});
 
 		(function traverse(o,collapse=true) {
 			for (let i in o) {
@@ -28,21 +26,23 @@ class TreePane extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        let filetree = dirTree(nextProps.dir);
+        if (this.state.tree.path !== nextProps.dir) {
+            let filetree = dirTree(nextProps.dir,{exclude:/(\/\.)|(\/_cache)/});
 
-		(function traverse(o,collapse=true) {
-			for (let i in o) {
-				if (!!o[i] && typeof(o[i])==="object") {
-					o.collapsed = collapse;
-					traverse(o[i] );
-				}
-			}
-		})(filetree,false);
+            (function traverse(o,collapse=true) {
+                for (let i in o) {
+                    if (!!o[i] && typeof(o[i])==="object") {
+                        o.collapsed = collapse;
+                        traverse(o[i] );
+                    }
+                }
+            })(filetree,false);
 
-        this.setState({
-            tree: filetree,
-            active: null
-        });
+            this.setState({
+                tree: filetree,
+                active: null
+            });
+       }
     }
 	
 	renderNode = node => {
