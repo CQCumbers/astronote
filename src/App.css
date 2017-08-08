@@ -25,15 +25,6 @@
     border-left: 1px solid #ddd;
 }
 
-.treepane {
-    position: absolute;
-    left: -8px;
-    right: 15px;
-    top: 80px;
-    bottom: 0px;
-    overflow: scroll;
-}
-
 .branding {
     position: absolute;
     text-align: center;

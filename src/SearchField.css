@@ -1,0 +1,31 @@
+.SearchField {
+    position: absolute;
+    width: 40%;
+    right: 15px;
+    top: 13px;
+    font-family: Input;
+    z-index: 8;
+}
+
+.Select-control {
+  height: 30px;
+  font-size: 12px;
+}
+.Select-control .Select-placeholder {
+  line-height: 28px;
+}
+.Select-control .Select-value {
+  line-height: 26px !important;
+}
+.Select-control .Select-value .Select-value-label {
+  line-height: 26px;
+}
+.Select-control .Select-input {
+  height: 26px;
+}
+.Select-menu {
+  font-size: 12px;
+}
+.Select-menu-outer {
+  width: 99.8%;
+}

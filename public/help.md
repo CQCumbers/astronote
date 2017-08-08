@@ -3,10 +3,8 @@
 
 $\sqrt{3x-1}+(1+x)^2$
 
-* Add Menubar functionality for opening directories
-*  Customize app icon
+* Customize app icon
 * Customize markdown-it to
-	* download external links to something.astro/.cache directory
 	* Cache rebuild button to remove unnecessary downloads
 * Figure out how to bundle fonts
 * Allow directory tree editing in app

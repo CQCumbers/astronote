@@ -49,12 +49,12 @@ class EditPane extends Component {
                      rimraf.sync(scrapeOptions.directory);
                 }
                 scrape(scrapeOptions).catch(console.log);
-                console.log('cached '+link);
+                console.log('Cached '+link);
             });
           }
       }).use(require('markdown-it-replace-link'));
       parser.render(this.state.text);
-  },10000,{leading:true})
+  },10000)
 
   renderMD = (markdown) => {
       const md = require('markdown-it')({
@@ -78,19 +78,18 @@ class EditPane extends Component {
       });
   }
 
-  handleChange = debounce((value) => {
-      console.log('saving...');
+  handleChange = (value) => {
       fs.writeFile(this.props.filepath, value, (err) => { if (err) return console.log(err); });
       this.setState({
           test: value 
       });   
       this.saveLinks();
-  },2000,{trailing:true})
+  }
 
   render() {
     return (
       <div className="EditPane">
-        <h2 className="filename">{ this.props.filepath.split('/').pop().split('.')[0] }</h2>
+        <h2 className="filename">{ this.props.name }</h2>
         <SimpleMDE
             onChange={ this.handleChange }
             value={ this.state.text }

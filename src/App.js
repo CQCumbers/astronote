@@ -1,19 +1,24 @@
 import React, { Component } from 'react';
 import EditPane from './EditPane.js';
 import TreePane from './TreePane.js';
-const settings = window.require('electron-settings');
-const fs = window.require('fs');
-const {ipcRenderer} = window.require('electron');
-const {dialog} = window.require('electron').remote;
+import SearchField from './SearchField.js';
 import './App.css';
-const helpfile = '/Users/alexanderzhang/Documents/astronote/src/help.txt';
+
+const fs = window.require('fs');
+const path = window.require('path');
+const settings = window.require('electron-settings');
+const walkBack = window.require('walk-back');
+const {ipcRenderer} = window.require('electron');
+const {dialog, app} = window.require('electron').remote;
+
+const helpfile = path.join(app.getAppPath(),'public','help.md');
 
 class App extends Component {
   constructor() {
       super();
       let newDir = settings.has('lastDir') ? settings.get('lastDir') : this.askDir() 
       this.state = {
-          file: fs.existsSync(newDir+'/index.md') ? newDir+'/index.md' : helpfile,
+          file: fs.existsSync(path.join(newDir,'index.md')) ? path.join(newDir,'index.md') : helpfile,
           dir: newDir
       };
   }
@@ -28,24 +33,40 @@ class App extends Component {
   askDir = () => {
       let dir = dialog.showOpenDialog({
           properties: ['openDirectory'],
-          filters: '*.astro'
       })[0];
       settings.set('lastDir', dir);
       return dir;
   }
 
-  handleFileChange = path => {
+  cacheDir = () => {
+      let prevCache = walkBack(path.join(this.state.file,'..'), '_cache');
+      if (prevCache && prevCache.startsWith(this.state.dir)) {
+          return prevCache;
+      } else {
+          return path.join(this.state.dir,'_cache');
+      }
+  }
+
+  handleFileChange = newPath => {
       this.setState({
-          file: path
+          file: fs.existsSync(path.join(newPath,'index.md')) ? path.join(newPath,'index.md') : newPath
       });
   }
 
   handleDirChange = () => {
       let newDir = this.askDir();
       this.setState({
-          file: fs.existsSync(newDir+'/index.md') ? newDir+'/index.md' : helpfile,
+          file: fs.existsSync(path.join(newDir,'index.md')) ? path.join(newDir,'index.md') : helpfile,
           dir: newDir
       });
+  }
+
+  nameFromPath = (filepath) => {
+      let name = filepath.split(path.sep).pop();
+      if (name === 'index.md') {
+          name = filepath.slice(0,filepath.length-'index.md'.length-path.sep.length).split(path.sep).pop();
+      }
+      return name
   }
 
   render() {
@@ -53,12 +74,11 @@ class App extends Component {
       <div className="App">
         <div className="col-left">
           <h1 className="branding">ASTRONOTE</h1>
-          <div className="treepane">
-		    <TreePane dir={ this.state.dir } changeFile={ this.handleFileChange }/>
-          </div>
+          <TreePane dir={ this.state.dir } changeFile={ this.handleFileChange }/>
         </div>
         <div className="col-right">
-          <EditPane filepath={ this.state.file } cacheDir={ this.state.dir+'/_cache' }/>
+          <SearchField getName={ this.nameFromPath } dir={ this.state.dir} changeFile={ this.handleFileChange }/>
+          <EditPane name={ this.nameFromPath(this.state.file) } filepath={ this.state.file } cacheDir={ this.cacheDir() }/>
         </div>
       </div>
     );
