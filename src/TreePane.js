@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import Tree from 'jab-react-tree';
+import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
+import './react-contextmenu.css';
 import 'react-ui-tree/dist/react-ui-tree.css';
 import cx from 'classnames';
 import './TreePane.css';
 
-const fs = window.require('fs');
+const fs = window.require('fs-extra');
 const mv = window.require('mv');
 const trash = window.require('trash');
 const dirTree = window.require('directory-tree');
@@ -13,12 +15,12 @@ const _path  = window.require('path');
 class TreePane extends Component {
     constructor(props) {
         super(props);
-        let filetree = dirTree(this.props.dir,{exclude:/(\/\.)|(\.astro\/_cache)|(\/index.md)/});
-        this.traverse(filetree,false);
+        let filetree = this.pruneTree(this.props.dir); 
         this.state = {
             tree: filetree,
             dragged: null,
-            active: null
+            active: null,
+            isRenaming: false
         };
     }
 
@@ -29,22 +31,53 @@ class TreePane extends Component {
     }
 
     updateTree = (newDir) => {
-        let filetree = dirTree(newDir,{exclude:/(\/\.)|(\.astro\/_cache)|(\/index.md)/});
-        this.traverse(filetree,false);
+        let filetree = this.pruneTree(newDir); 
         this.setState({
             tree: filetree,
             dragged: null,
-            active: null
+            active: null,
+            isRenaming: false
         });
     }
 
-    traverse = (o,collapse=false) => {
+    pruneTree = (newDir) => {
+        let filetree = dirTree(newDir,{exclude:/(\/\.)|(\.astro\/_cache)|(\/index.md)/});
+        this.prune(filetree);
+        filetree = dirTree(newDir,{exclude:/(\/\.)|(\.astro\/_cache)|(\/index.md)/});
+        this.setCollapse(filetree,false);
+        return filetree;
+    }
+
+    prune = (o) => {
         for (let i in o) {
-            if (!!o[i] && Array.isArray(o[i]) && o[i].length >= 1) {
+            if (!!o[i] && Array.isArray(o[i])) {
+                if (o[i].length >= 1) {
+                    for (let j in o[i]) {
+                        if (!!o[i][j] && typeof(o[i][j]) === 'object') {
+                            this.prune(o[i][j]);
+                        }
+                    }
+                } else if (fs.lstatSync(o.path).isDirectory()) {
+                    console.log('leaf directory at '+o.path);
+                    if (!o.path.endsWith('.astro') && fs.readdirSync(o.path).indexOf('index.md') >= 0) { // turn folders into files
+                        fs.moveSync(_path.join(o.path,'index.md'), o.path+'_temp', {overwrite:false});
+                        fs.removeSync(o.path);
+                        fs.moveSync(o.path+'_temp', o.path.endsWith('.md') ? o.path : o.path+'.md', {overwrite:false});
+                    }
+                }
+            }
+        }
+    }
+
+    setCollapse = (o,collapse=false) => {
+        for (let i in o) {
+            if (!!o[i] && Array.isArray(o[i])) {
                 o.collapsed = collapse;
-                for (let j in o[i]) {
-                    if (!!o[i][j] && typeof(o[i][j]) === 'object') {
-                        this.traverse(o[i][j]);
+                if (o[i].length >= 1) {
+                    for (let j in o[i]) {
+                        if (!!o[i][j] && typeof(o[i][j]) === 'object') {
+                            this.setCollapse(o[i][j]);
+                        }
                     }
                 }
             }
@@ -69,15 +102,26 @@ class TreePane extends Component {
     }
 
 	renderNode = node => {
+      let active = node && this.state.active && node.path === this.state.active.path;
+      let nameComponent = this.state.isRenaming && active ? (
+          <input autoFocus 
+              className="noteNameField"
+              value={this.state.active.name}
+              onChange={ (evt) => {this.handleRename(this.state.active,evt.target.value)} }
+              onBlur={ (evt) => {this.renameNote(this.state.active)} }
+          />
+          ) : ( node.name )
 	  return (
-        <span
-          className={cx('node', {
-            'is-active': !!node && !!this.state.active && node.path === this.state.active.path
-          })}
-          onClick={this.onClickNode.bind(null, node)}
-        >
-		  { node.name }
-        </span>
+        <div>
+          <ContextMenuTrigger
+          id="treepane-menu"
+          collect={x=>node}>
+            <span className={cx('node', {'is-active': active})} 
+              onClick={this.onClickNode.bind(null, node)} onContextMenu={this.onClickNode.bind(null, node)}>
+              { nameComponent }
+            </span>
+          </ContextMenuTrigger>
+        </div>
       );
     }
 
@@ -113,12 +157,16 @@ class TreePane extends Component {
                 );
             }
             
-            if (fs.existsSync(newPath) && fs.lstatSync(newPath).isFile()) {
-                mv(newPath,
-                    _path.join(newPath,'index.'+newPath.split('.').pop()),
-                    {mkdirp:true,clobber:false},
-                    (err)=>{ if (err) { return console.log(err) } move(); }
-                );
+            let parentPath = _path.dirname(newPath);
+            if (fs.existsSync(parentPath) && fs.lstatSync(parentPath).isFile()) { // turn files into folders
+                mv(parentPath,parentPath+'_temp',{clobber:false},(err)=>{
+                    if (err) { return console.log(err) }
+                    mv(parentPath+'_temp',
+                        _path.join(parentPath,'index.'+parentPath.split('.').pop()),
+                        {mkdirp:true,clobber:false},
+                        (err)=>{ if (err) { return console.log(err) } move(); }
+                    );
+                });
             } else {
                 move();
             }
@@ -127,6 +175,7 @@ class TreePane extends Component {
     }
 
     addNote = supernote => {
+        this.forceUpdate();
         let add = () => {
             let filepath = _path.join(supernote.path,'untitled');
             let count = 1;
@@ -135,20 +184,25 @@ class TreePane extends Component {
             }
             fs.openSync(filepath+count+'.md', 'a');
             this.updateTree(this.props.dir);
+            this.setState({active:supernote});
         }
 
         if (fs.lstatSync(supernote.path).isFile()) {
-            mv(supernote.path,
-                _path.join(supernote.path,'index.'+supernote.path.split('.').pop()),
-                {mkdirp:true,clobber:false},
-                (err)=>{ if (err) { return console.log(err) } add(); }
-            );
+            mv(supernote.path,supernote.path+'_temp',{clobber:false},(err)=>{
+                if (err) { return console.log(err) }
+                mv(supernote.path+'_temp',
+                    _path.join(supernote.path,'index.'+supernote.path.split('.').pop()),
+                    {mkdirp:true,clobber:false},
+                    (err)=>{ if (err) { return console.log(err) } add(); }
+                );
+            });
         } else {
             add();
         }
     }
     
     deleteNote = note => {
+        this.forceUpdate();
         if (fs.existsSync(note.path)) {
             trash(note.path).then(() => {
                 this.updateTree(this.props.dir);
@@ -163,31 +217,25 @@ class TreePane extends Component {
     }
 
     renameNote = (note) => {
-        if (fs.existsSync(note.path)) {
+        if (fs.existsSync(note.path) && note.path.split(_path.sep).pop() !== note.name) {
             mv(note.path,
                 _path.join(note.path,'..',note.name),
                 {mkdirp:true,clobber:false},
                 (err)=>{ if (err) { return console.log(err) } this.updateTree(this.props.dir); }
             );
+        } else {
+            this.setState({isRenaming:false});
         }
     }
 
     render() {
       return (
         <div className="Treepane">
-          <button onClick={()=>this.addNote(this.state.active)} disabled={!this.state.active}>
-              Add Note
-          </button>
-          <button onClick={()=>this.deleteNote(this.state.active)} disabled={!this.state.active}>
-              Delete Note
-          </button>
-          <input
-              disabled={!this.state.active}
-              value={this.state.active ? this.state.active.name : 'Change Name'}
-              onChange={ (evt) => {this.handleRename(this.state.active,evt.target.value)} }
-              onKeyPress={ (evt) => {if(evt.key==='Enter'){this.renameNote(this.state.active)}} }
-          />
-          <hr/>
+          <ContextMenu id="treepane-menu" holdToDisplay={-1}>
+            <MenuItem onClick={(x,y,z)=>{this.addNote(y)}}>Add Subnote</MenuItem>
+            <MenuItem onClick={(x,y,z)=>{this.deleteNote(y)}}>Delete Note</MenuItem>
+            <MenuItem onClick={(x,y,z)=>{this.setState({isRenaming:true})}}>Rename Note</MenuItem>
+          </ContextMenu>
           <Tree
               paddingLeft={15}
               tree={JSON.parse(JSON.stringify(this.state.tree))}

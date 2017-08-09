@@ -2,16 +2,20 @@ import React, { Component } from 'react';
 import EditPane from './EditPane.js';
 import TreePane from './TreePane.js';
 import SearchField from './SearchField.js';
+import SplitPane from 'react-split-pane';
 import './App.css';
 
-const fs = window.require('fs');
+const fs = window.require('fs-extra');
 const path = window.require('path');
 const settings = window.require('electron-settings');
 const walkBack = window.require('walk-back');
-const {ipcRenderer} = window.require('electron');
-const {dialog, app} = window.require('electron').remote;
+const electron = window.require('electron');
+const ipcRenderer = electron.ipcRenderer;
+const {dialog, app} = electron.remote;
 
-const helpfile = path.join(app.getAppPath(),'public','help.md');
+const helpfile = path.join(app.getAppPath(), 'build', 'help.md');
+const blankdir = path.join(app.getAppPath(), 'build', 'notebook.astro'); 
+// just remember to rebuild after making any changes to these
 
 class App extends Component {
   constructor() {
@@ -26,6 +30,7 @@ class App extends Component {
   componentDidMount() {
       ipcRenderer.on('astronote-msg', (event, arg) => {
           if (arg === 'open_dir') { this.handleDirChange(); }
+          else if (arg === 'new_dir') { this.handleNewDir(); }
           else { console.log(arg) }
       });
   }
@@ -36,6 +41,17 @@ class App extends Component {
       })[0];
       settings.set('lastDir', dir);
       return dir;
+  }
+
+  handleNewDir = () => {
+      let dir = dialog.showOpenDialog({
+          properties: ['openDirectory'],
+      })[0];
+      fs.copySync(blankdir, path.join(dir,'notebook.astro'), {overwrite:false});
+      this.setState({
+          file: path.join(dir,'notebook.astro','index.md'),
+          dir: path.join(dir,'notebook.astro')
+      });
   }
 
   cacheDir = () => {
@@ -71,16 +87,16 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <div className="col-left">
+      <SplitPane className="App" primary="second" defaultSize="78%" minSize="0">
+        <div>
           <h1 className="branding">ASTRONOTE</h1>
           <TreePane dir={ this.state.dir } changeFile={ this.handleFileChange }/>
         </div>
-        <div className="col-right">
+        <div>
           <SearchField getName={ this.nameFromPath } dir={ this.state.dir} changeFile={ this.handleFileChange }/>
           <EditPane name={ this.nameFromPath(this.state.file) } filepath={ this.state.file } cacheDir={ this.cacheDir() }/>
         </div>
-      </div>
+      </SplitPane>
     );
   }
 }

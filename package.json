@@ -1,21 +1,25 @@
 {
   "name": "Astronote",
   "version": "0.1.0",
+  "description": "Markdown notebook with link archiving",
+  "author": "CQCumbers",
   "private": true,
   "devDependencies": {
     "devtron": "^1.4.0",
     "electron": "^1.6.11",
+    "electron-builder": "^19.19.1",
+    "electron-builder-squirrel-windows": "^19.19.1",
     "electron-react-devtools": "^0.4.0",
     "foreman": "^2.0.0",
-    "react-scripts": "0.8.5"
+    "react-scripts": "1.0.10"
   },
   "dependencies": {
     "directory-tree": "^2.0.0",
     "directory-tree-promise": "^1.0.6",
     "electron-settings": "^3.1.1",
     "find-in-files": "^0.4.0",
+    "fs-extra": "^4.0.1",
     "jab-react-tree": "^1.1.1",
-    "lodash.debounce": "^4.0.8",
     "markdown-it": "^8.3.2",
     "markdown-it-katex": "^2.0.3",
     "markdown-it-replace-link": "^1.0.1",
@@ -23,23 +27,36 @@
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.6.0",
     "react-addons-transition-group": "^15.6.0",
+    "react-contextmenu": "^2.6.5",
     "react-dom": "^15.4.2",
-    "react-select": "1.0.0-rc",
+    "react-select": "1.0.0-rc.5",
     "react-simplemde-editor": "^3.6.11",
+    "react-split-pane": "^0.1.65",
     "react-ui-tree": "git+https://github.com/nikita-sunwind/react-ui-tree.git",
-    "rimraf": "^2.6.1",
     "trash": "^4.0.1",
     "walk-back": "^3.0.0",
     "website-scraper": "^3.1.0"
   },
-  "homepage": "./",
-  "main": "src/electron-starter.js",
+  "homepage": ".",
+  "main": "public/electron.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "dev": "nf start -p 3000"
+    "dev": "nf start -p 3000",
+    "pack": "build --dir",
+    "dist": "npm run build && build",
+    "postinstall": "install-app-deps"
+  },
+  "build": {
+    "appId": "com.electron.astronote",
+    "squirrelWindows": {
+      "iconUrl": "https://raw.githubusercontent.com/louh/semiotic-standard/master/014.NO.PRESSURE.GRAVITY.SUIT.REQUIRED.png"
+    },
+    "directories": {
+      "buildResources": "public"
+    }
   }
 }

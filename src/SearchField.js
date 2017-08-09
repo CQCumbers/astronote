@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-const Select = window.require('react-select');
 import 'react-select/dist/react-select.css';
 import './SearchField.css';
+const Select = window.require('react-select');
 
 const findInFiles = window.require('find-in-files')
 
@@ -14,7 +14,7 @@ class SearchField extends Component {
         try {
             new RegExp(input);
         } catch(e) {
-            input = input.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            input = input.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
         }
 
 		return findInFiles.find({'term': input, 'flags': 'ig'}, this.props.dir, '.md$')

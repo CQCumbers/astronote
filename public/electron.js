@@ -22,8 +22,6 @@ function createWindow() {
             slashes: true
         });
     mainWindow.loadURL(startUrl);
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools();
 
 	// Show when loaded
 	mainWindow.once('ready-to-show', () => {

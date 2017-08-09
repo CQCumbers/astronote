@@ -1,11 +1,13 @@
 const {app, Menu} = require('electron');
-const mainWindow = require('./electron-starter.js');
+const mainWindow = require('./electron.js');
 
 const template = [
   {
     label: 'Edit',
     submenu: [
       {label: 'Open .astro Notebook', click() { mainWindow.webContents.send('astronote-msg', 'open_dir')} },
+      {label: 'New .astro Notebook', click() { mainWindow.webContents.send('astronote-msg', 'new_dir')} },
+      {type: 'separator'},
       {role: 'undo'},
       {role: 'redo'},
       {type: 'separator'},

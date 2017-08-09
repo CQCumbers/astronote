@@ -7,6 +7,11 @@
     overflow: scroll;
 }
 
+.noteNameField {
+  font-size: 11px;
+  font-family: Input;
+}
+
 .m-node.placeholder {
   border: 1px dashed #1385e5;
 }

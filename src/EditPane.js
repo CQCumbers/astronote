@@ -4,11 +4,9 @@ import 'react-simplemde-editor/dist/simplemde.min.css';
 import './EditPane.css';
 import './katex/katex.min.css';
 
-const fs = window.require('fs');
+const fs = window.require('fs-extra');
 const scrape = window.require('website-scraper');
 const request = window.require('request');
-const rimraf = window.require('rimraf');
-const debounce = window.require('lodash.debounce');
 const imageExts = ['.jpg', '.png', '.svg', '.jpeg'];
 
 class EditPane extends Component {
@@ -26,44 +24,48 @@ class EditPane extends Component {
       });
   }
 
-  saveLinks = debounce(() => {
+  saveLinks = () => {
       const parser = require('markdown-it')({
           html: true,
           linkify: true,
           typographer: true,
           replaceLink: (link, env) => {
-            let scrapeOptions = {
-                urls: [link],
-                directory: this.props.cacheDir+'/'+link.replace(/[^a-z0-9]/gi, '').toLowerCase(),
-                subdirectories: [
-                    {directory: 'img', extensions: imageExts},
-                    {directory: 'js', extensions: ['.js']},
-                    {directory: 'css', extensions: ['.css']}
-                ],
-                defaultFilename: 'index.'+ (imageExts.some((ext) => link.endsWith(ext)) ? link.split('.').pop() : 'html')
-            };
-            request.get(link, (err, res, body) => {
-                const { statusCode } = res;
-                if (err || statusCode < 200 || statusCode >= 400) return console.log('Status Code: '+statusCode);
-                if (fs.existsSync(scrapeOptions.directory)) {
-                     rimraf.sync(scrapeOptions.directory);
-                }
-                scrape(scrapeOptions).catch(console.log);
-                console.log('Cached '+link);
-            });
-          }
+            if (/^http(s)?:\/\/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i.test(link)) {
+                let scrapeOptions = {
+                    urls: [link],
+                    directory: this.props.cacheDir+'/'+link.replace(/[^a-z0-9]/gi, '').toLowerCase(),
+                    subdirectories: [
+                        {directory: 'img', extensions: imageExts},
+                        {directory: 'js', extensions: ['.js']},
+                        {directory: 'css', extensions: ['.css']}
+                    ],
+                    defaultFilename: 'index.'+ (imageExts.some((ext) => link.endsWith(ext)) ? link.split('.').pop() : 'html')
+                };
+                if (fs.lstatSync(scrapeOptions.directory).mtimeMs < Date.now() - 3*86400*1000) {
+                    request.get(link, (err, res, body) => {
+                        if (err || res.statusCode < 200 || res.statusCode >= 400) { return console.log(err ? err : 'Status Code: '+res.statusCode); }
+                        if (fs.existsSync(scrapeOptions.directory)) {
+                            fs.removeSync(scrapeOptions.directory);
+                        }
+                        scrape(scrapeOptions).catch(console.log).then((result)=>{ if(result){console.log('Cached '+link)} });
+                    });
+                } else { return console.log('Cached at least 3 days ago'); }
+            } else { return link }
+        }
       }).use(require('markdown-it-replace-link'));
       parser.render(this.state.text);
-  },10000)
+  }
 
   renderMD = (markdown) => {
       const md = require('markdown-it')({
           html: true,
           linkify: true,
           typographer: true,
-          replaceLink: (link, env) => 'file://'+this.props.cacheDir+'/'
+          replaceLink: (link, env) => /^http(s)?:\/\/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i.test(link) ?
+              'file://'+this.props.cacheDir+'/'
               +link.replace(/[^a-z0-9]/gi, '').toLowerCase()+'/'
               +(imageExts.some((ext) => link.endsWith(ext)) ? 'img/index.'+link.split('.').pop() : 'index.html')
+              : link
       }).use(require('markdown-it-katex')).use(require('markdown-it-replace-link'));
       return md.render(markdown);
   }
