@@ -175,9 +175,8 @@ class TreePane extends Component {
     }
 
     addNote = supernote => {
-        this.forceUpdate();
         let add = () => {
-            let filepath = _path.join(supernote.path,'untitled');
+            let filepath = _path.join(supernote.path,'Untitled');
             let count = 1;
             while (fs.existsSync(filepath+count+'.md')) {
                 count++;
@@ -197,7 +196,7 @@ class TreePane extends Component {
                 );
             });
         } else {
-            add();
+            setTimeout(add, 0); // ensure tree refreshes
         }
     }
     

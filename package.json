@@ -52,9 +52,6 @@
   },
   "build": {
     "appId": "com.electron.astronote",
-    "squirrelWindows": {
-      "iconUrl": "https://raw.githubusercontent.com/louh/semiotic-standard/master/014.NO.PRESSURE.GRAVITY.SUIT.REQUIRED.png"
-    },
     "directories": {
       "buildResources": "public"
     }

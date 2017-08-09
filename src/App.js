@@ -38,7 +38,8 @@ class App extends Component {
   askDir = () => {
       let dir = dialog.showOpenDialog({
           properties: ['openDirectory'],
-      })[0];
+      });
+      dir = dir ? dir[0] : settings.get('lastDir');
       settings.set('lastDir', dir);
       return dir;
   }

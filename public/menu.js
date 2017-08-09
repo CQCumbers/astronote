@@ -5,8 +5,8 @@ const template = [
   {
     label: 'Edit',
     submenu: [
-      {label: 'Open .astro Notebook', click() { mainWindow.webContents.send('astronote-msg', 'open_dir')} },
-      {label: 'New .astro Notebook', click() { mainWindow.webContents.send('astronote-msg', 'new_dir')} },
+      {label: 'New .astro Notebook', accelerator: 'CmdOrCtrl+N', click() { mainWindow.webContents.send('astronote-msg', 'new_dir')} },
+      {label: 'Open .astro Notebook', accelerator: 'CmdOrCtrl+O', click() { mainWindow.webContents.send('astronote-msg', 'open_dir') } },
       {type: 'separator'},
       {role: 'undo'},
       {role: 'redo'},

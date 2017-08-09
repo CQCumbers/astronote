@@ -80,6 +80,14 @@ class EditPane extends Component {
       });
   }
 
+  componentDidUpdate(prevProps,prevState) {
+      // temp hack to update preview - see simplemde issue #399
+      if (this.editor.simplemde.isPreviewActive()) {
+          this.editor.simplemde.togglePreview();
+          this.editor.simplemde.togglePreview();
+      }
+  }
+
   handleChange = (value) => {
       fs.writeFile(this.props.filepath, value, (err) => { if (err) return console.log(err); });
       this.setState({
@@ -93,12 +101,15 @@ class EditPane extends Component {
       <div className="EditPane">
         <h2 className="filename">{ this.props.name }</h2>
         <SimpleMDE
+            ref={(text)=>{this.editor=text;}}
             onChange={ this.handleChange }
             value={ this.state.text }
             options={{
                 autofocus: true,
 				spellChecker: false,
-                previewRender: this.renderMD
+                previewRender: this.renderMD,
+                status: ['lines', 'words'],
+                hideIcons: ['guide']
             }}
         />
       </div>
