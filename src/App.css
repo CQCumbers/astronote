@@ -1,53 +1,57 @@
+/* Import bundled fonts */
 @font-face {
-      font-family: Input;
-      src: url(fonts/InputMono-Regular.ttf) format('truetype');
-      font-weight: normal;
-      font-style: normal;
+    font-family: Input;
+    src: url(fonts/InputMono-Regular.ttf) format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 @font-face {
-      font-family: Input;
-      src: url(fonts/InputMono-Bold.ttf) format('truetype');
-      font-weight: bold;
-      font-style: normal;
+    font-family: Input;
+    src: url(fonts/InputMono-Bold.ttf) format('truetype');
+    font-weight: bold;
+    font-style: normal;
 }
 @font-face {
-      font-family: Input;
-      src: url(%PUBLIC_URL%/fonts/InputMono-Italic.ttf) format('truetype');
-      font-weight: normal;
-      font-style: italic;
+    font-family: Input;
+    src: url(%PUBLIC_URL%/fonts/InputMono-Italic.ttf) format('truetype');
+    font-weight: normal;
+    font-style: italic;
 }
 @font-face {
-      font-family: Input;
-      src: url(%PUBLIC_URL%/fonts/InputMono-BoldItalic.ttf) format('truetype');
-      font-weight: bold;
-      font-style: italic;
+    font-family: Input;
+    src: url(%PUBLIC_URL%/fonts/InputMono-BoldItalic.ttf) format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: Avenir;
+    src: url(fonts/AvenirNextLTPro-Regular.otf) format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: Avenir;
+    src: url(fonts/AvenirNextLTPro-Bold.otf) format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: Avenir;
+    src: url(fonts/AvenirNextLTPro-It.otf) format('opentype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: Avenir;
+    src: url(fonts/AvenirNextLTPro-BoldIt.otf) format('opentype');
+    font-weight: bold;
+    font-style: italic;
 }
 
-@font-face {
-      font-family: Avenir;
-      src: url(fonts/AvenirNextLTPro-Regular.otf) format('opentype');
-      font-weight: normal;
-      font-style: normal;
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
-@font-face {
-      font-family: Avenir;
-      src: url(fonts/AvenirNextLTPro-Bold.otf) format('opentype');
-      font-weight: bold;
-      font-style: normal;
-}
-@font-face {
-      font-family: Avenir;
-      src: url(fonts/AvenirNextLTPro-It.otf) format('opentype');
-      font-weight: normal;
-      font-style: italic;
-}
-@font-face {
-      font-family: Avenir;
-      src: url(fonts/AvenirNextLTPro-BoldIt.otf) format('opentype');
-      font-weight: bold;
-      font-style: italic;
-}
-
 
 .App {
     position: absolute;
@@ -55,6 +59,7 @@
     right: 0px;
     top: 0px;
     bottom: 0px;
+    animation: fadein 1.2s;
 }
 
 .col-left {
@@ -85,6 +90,9 @@
     font-family: Input;
     color: #e5583f;
     overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
 }
 
 .Resizer {

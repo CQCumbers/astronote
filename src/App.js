@@ -8,7 +8,6 @@ import './App.css';
 const fs = window.require('fs-extra');
 const path = window.require('path');
 const settings = window.require('electron-settings');
-const walkBack = window.require('walk-back');
 const electron = window.require('electron');
 const ipcRenderer = electron.ipcRenderer;
 const {dialog, app} = electron.remote;
@@ -56,6 +55,7 @@ class App extends Component {
   }
 
   cacheDir = () => {
+      const walkBack = window.require('walk-back');
       let prevCache = walkBack(path.join(this.state.file,'..'), '_cache');
       if (prevCache && prevCache.startsWith(this.state.dir)) {
           return prevCache;

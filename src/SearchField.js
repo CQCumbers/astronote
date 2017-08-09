@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import 'react-select/dist/react-select.css';
 import './SearchField.css';
-const Select = window.require('react-select');
-
-const findInFiles = window.require('find-in-files')
+import Select from 'react-select';
 
 class SearchField extends Component {
 	handleChange = (newPath) => {
@@ -11,6 +9,7 @@ class SearchField extends Component {
 	}
 
 	getOptions = (input) => {
+        const findInFiles = window.require('find-in-files')
         try {
             new RegExp(input);
         } catch(e) {

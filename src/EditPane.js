@@ -5,26 +5,21 @@ import './EditPane.css';
 import './katex/katex.min.css';
 
 const fs = window.require('fs-extra');
-const scrape = window.require('website-scraper');
-const request = window.require('request');
 const imageExts = ['.jpg', '.png', '.svg', '.jpeg'];
 
 class EditPane extends Component {
   constructor(props) {
       super(props)
+      let data = fs.readFileSync(this.props.filepath, 'utf8');
       this.state = {
-          text: ''
+          text: data 
       };
-      fs.readFile(this.props.filepath, 'utf8', (err, data) => {
-          if (err) return console.log(err);
-          this.setState({
-              text: data 
-          });
-          this.saveLinks();
-      });
+      this.saveLinks();
   }
 
   saveLinks = () => {
+      const scrape = window.require('website-scraper');
+      const request = window.require('request');
       const parser = require('markdown-it')({
           html: true,
           linkify: true,

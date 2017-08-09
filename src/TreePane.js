@@ -8,8 +8,6 @@ import './TreePane.css';
 
 const fs = window.require('fs-extra');
 const mv = window.require('mv');
-const trash = window.require('trash');
-const dirTree = window.require('directory-tree');
 const _path  = window.require('path');
  
 class TreePane extends Component {
@@ -41,6 +39,7 @@ class TreePane extends Component {
     }
 
     pruneTree = (newDir) => {
+        const dirTree = window.require('directory-tree');
         let filetree = dirTree(newDir,{exclude:/(\/\.)|(\.astro\/_cache)|(\/index.md)/});
         this.prune(filetree);
         filetree = dirTree(newDir,{exclude:/(\/\.)|(\.astro\/_cache)|(\/index.md)/});
@@ -201,6 +200,7 @@ class TreePane extends Component {
     }
     
     deleteNote = note => {
+        const trash = window.require('trash');
         this.forceUpdate();
         if (fs.existsSync(note.path)) {
             trash(note.path).then(() => {

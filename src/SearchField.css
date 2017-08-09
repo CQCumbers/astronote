@@ -13,6 +13,9 @@
 }
 .Select-control .Select-placeholder {
   line-height: 28px;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
 }
 .Select-control .Select-value {
   line-height: 26px !important;

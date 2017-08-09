@@ -13,7 +13,7 @@ let mainWindow;
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 1281, height: 800, show: false, webPreferences: {webSecurity: false}});
+    mainWindow = new BrowserWindow({width: 1281, height: 800, webPreferences: {webSecurity: false}});
 
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
@@ -22,11 +22,6 @@ function createWindow() {
             slashes: true
         });
     mainWindow.loadURL(startUrl);
-
-	// Show when loaded
-	mainWindow.once('ready-to-show', () => {
-		 mainWindow.show()
-	})
     
     module.exports = mainWindow;
     require('./menu.js');
