@@ -5,7 +5,7 @@ import './EditPane.css';
 import './katex/katex.min.css';
 
 const fs = window.require('fs-extra');
-const imageExts = ['.jpg', '.png', '.svg', '.jpeg'];
+const imageExts = ['.jpg', '.png', '.svg', '.jpeg', '.gif'];
 
 class EditPane extends Component {
   constructor(props) {
@@ -36,7 +36,7 @@ class EditPane extends Component {
                     ],
                     defaultFilename: 'index.'+ (imageExts.some((ext) => link.endsWith(ext)) ? link.split('.').pop() : 'html')
                 };
-                if (fs.lstatSync(scrapeOptions.directory).mtimeMs < Date.now() - 3*86400*1000) {
+                if (!fs.existsSync(scrapeOptions.directory) || fs.lstatSync(scrapeOptions.directory).mtimeMs < Date.now() - 3*86400*1000) {
                     request.get(link, (err, res, body) => {
                         if (err || res.statusCode < 200 || res.statusCode >= 400) { return console.log(err ? err : 'Status Code: '+res.statusCode); }
                         if (fs.existsSync(scrapeOptions.directory)) {
@@ -47,7 +47,7 @@ class EditPane extends Component {
                 } else { return console.log('Cached at least 3 days ago'); }
             } else { return link }
         }
-      }).use(require('markdown-it-replace-link'));
+      }).use(require('markdown-it-replace-link')).use(require('markdown-it-imsize'));
       parser.render(this.state.text);
   }
 
@@ -61,7 +61,7 @@ class EditPane extends Component {
               +link.replace(/[^a-z0-9]/gi, '').toLowerCase()+'/'
               +(imageExts.some((ext) => link.endsWith(ext)) ? 'img/index.'+link.split('.').pop() : 'index.html')
               : link
-      }).use(require('markdown-it-katex')).use(require('markdown-it-replace-link'));
+      }).use(require('markdown-it-katex')).use(require('markdown-it-replace-link')).use(require('markdown-it-imsize')).use(require('markdown-it-sub'));
       return md.render(markdown);
   }
     
@@ -71,7 +71,7 @@ class EditPane extends Component {
           this.setState({
               text: data 
           });
-          this.saveLinks();
+          setTimeout(this.saveLinks(),10);
       });
   }
 
@@ -84,6 +84,7 @@ class EditPane extends Component {
   }
 
   handleChange = (value) => {
+      console.log('saving...')
       fs.writeFile(this.props.filepath, value, (err) => { if (err) return console.log(err); });
       this.setState({
           test: value 
