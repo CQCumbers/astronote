@@ -1,6 +1,6 @@
 .CodeMirror {
     position: absolute;
-    overflow: scroll;
+    overflow: hidden;
     border-radius: 0px;
     border-left-width: 0px;
     padding-top: 0px;
