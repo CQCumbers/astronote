@@ -19,7 +19,7 @@ const blankdir = path.join(app.getAppPath(), 'build', 'notebook.astro');
 class App extends Component {
   constructor() {
       super();
-      let newDir = settings.has('lastDir') ? settings.get('lastDir') : this.askDir() 
+      let newDir = settings.has('lastDir') ? settings.get('lastDir') : this.handleNewDir();
       this.state = {
           file: fs.existsSync(path.join(newDir,'index.md')) ? path.join(newDir,'index.md') : helpfile,
           dir: newDir

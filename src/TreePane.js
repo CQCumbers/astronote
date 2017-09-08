@@ -40,9 +40,9 @@ class TreePane extends Component {
 
     pruneTree = (newDir) => {
         const dirTree = window.require('directory-tree');
-        let filetree = dirTree(newDir,{exclude:/(\/\.)|(\.astro\/_cache)|(\/index.md)/});
+        let filetree = dirTree(newDir,{exclude:/([\/\]\.)|(.astro[\/\]_cache)|([\/\]index.md)/});
         this.prune(filetree);
-        filetree = dirTree(newDir,{exclude:/(\/\.)|(\.astro\/_cache)|(\/index.md)/});
+        filetree = dirTree(newDir,{exclude:/([\/\]\.)|(.astro[\/\]_cache)|([\/\]index.md)/});
         this.setCollapse(filetree,false);
         return filetree;
     }
