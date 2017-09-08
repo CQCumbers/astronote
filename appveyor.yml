@@ -11,6 +11,10 @@ cache:
 init:
   - git config --global core.autocrlf input
 
+environment:
+  GH_TOKEN:
+    secure: yOxJQm+1k+a/JlzHd0kZQ+oczPzDHIaZOEtIIdFLfBZJuzdvdVTgXHy+1VaIIONg
+
 install:
   - ps: Install-Product node 8 x64
   - yarn install

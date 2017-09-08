@@ -1,5 +1,8 @@
 # ASTRONOTE
 
+![Appveyor Status](https://ci.appveyor.com/api/projects/status/github/CQCumbers/astronote?branch=master&svg=true)
+![Travis Status](https://travis-ci.org/CQCumbers/astronote.svg?branch=master)
+
 A minimal features, maximum memory footprint markdown-based note taking app with automatic link archiving.
 Made by CQCumbers for Science Olympiad Astronomy notes. Every version increment, remember to create new release draft and update version numbers in package.json and appveyor.yml - see [electron-builder wiki](https://www.electron.build/publishing-artifacts)
 
