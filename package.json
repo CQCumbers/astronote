@@ -34,7 +34,7 @@
     "react-select": "1.0.0-rc.5",
     "react-simplemde-editor": "^3.6.11",
     "react-split-pane": "^0.1.65",
-    "react-ui-tree": "git+https://github.com/nikita-sunwind/react-ui-tree.git",
+    "react-ui-tree": "^4.0.0",
     "trash": "^4.0.1",
     "walk-back": "^3.0.0",
     "website-scraper": "^3.1.0"
@@ -58,8 +58,8 @@
       "buildResources": "public"
     },
     "win": {
-        "target": "nsis",
-        "icon": "build/icon.ico"
+      "target": "nsis",
+      "icon": "build/icon.ico"
     }
   }
 }
